@@ -27,4 +27,5 @@ core.data.finger-tree와 다른 점?
  - :bundle 타겟으로 빌드
 
 Reference
- - http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf
+ - [Finger trees: a simple general-purpose data structure](http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf)
+ - [Purely Functional, Real-Time Deques with Catenation](http://www.math.tau.ac.il/~haimk/adv-ds-2000/jacm-final.pdf)

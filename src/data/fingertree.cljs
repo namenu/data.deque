@@ -17,9 +17,6 @@
   (viewl [coll])
   (viewr [coll]))
 
-;; somehow forward declaration for deftype doesn't work and finding the reason behind is hard
-;; because I couldn't find a safe way to unload/reload class definitions.
-;; so make some additional constructors instead and use is as forward decls.
 (declare empty-tree single-tree deep-tree)
 
 (deftype Empty []

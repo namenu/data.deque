@@ -1,5 +1,5 @@
 (ns data.deque
-  (:require [data.fingertree :as ft :refer [<| |> viewl viewr]]))
+  (:require [data.fingertree :as ft :refer [<| |> viewl viewr empty-tree]]))
 
 (defprotocol IDeque
   (add-first [coll e])
@@ -20,49 +20,33 @@
   (remove-first [_] (PersistentDeque. (second (viewl tree))))
   (remove-last [_] (PersistentDeque. (second (viewr tree))))
 
-  ICollection
-  (-conj [this v] (add-last this v))
-
   IStack
   (-peek [this] (peek-last this))
   (-pop [this] (remove-last this))
 
-  IPrintWithWriter
-  (-pr-writer [coll writer opts]
-    (pr-sequential-writer writer pr-writer "(" " " ")" opts coll))
+  ICollection
+  (-conj [this v] (add-last this v))
+
+  IEmptyableCollection
+  (-empty [_] (.-EMPTY PersistentDeque))
 
   ISequential
   ISeqable
-  (-seq [this] this)
+  (-seq [this]
+    (if (instance? ft/Empty tree)
+      nil
+      this))
 
   ISeq
   (-first [this] (peek-first this))
-  (-rest [_]
-    (let [[v rest] (viewl tree)]
-      (if v
-        (PersistentDeque. rest)
-        '()))))
+  (-rest [this] (remove-first this))
 
-(def empty-deque (PersistentDeque. (ft/Empty.)))
+  IPrintWithWriter
+  (-pr-writer [coll writer opts]
+    (pr-sequential-writer writer pr-writer "(" " " ")" opts coll)))
 
-(comment
-  (let [layer3 (ft/Empty.)
-        layer2 (ft/Deep. [[\i \s] [\i \s]] layer3 [[\n \o \t] [\a \t]])
-        layer1 (ft/Deep. [\t \h] layer2 [\r \e \e])]
-    ;(js/console.log layer1)
+(set! (.-EMPTY PersistentDeque) (PersistentDeque. empty-tree))
+(def empty-deque (.-EMPTY PersistentDeque))
 
-    (let [s  (-> (PersistentDeque. layer1)
-                 )
-
-          t2 (-> (ft/Empty.)
-                 (<| 1))]
-      (-> layer1
-          ;viewl second
-          ;viewl second
-          ;viewl second
-          ;viewl second
-          viewr second
-          viewr second
-          viewr second
-          ))
-    ))
+(defn deque [& coll]
+  (PersistentDeque. (reduce |> empty-tree coll)))

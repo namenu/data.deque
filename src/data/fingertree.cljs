@@ -20,7 +20,7 @@
 ;; somehow forward declaration for deftype doesn't work and finding the reason behind is hard
 ;; because I couldn't find a safe way to unload/reload class definitions.
 ;; so make some additional constructors instead and use is as forward decls.
-(declare empty-tree single-tree deep)
+(declare empty-tree single-tree deep-tree)
 
 (deftype Empty []
   IFingerTree
@@ -33,8 +33,8 @@
 
 (deftype Single [v]
   IFingerTree
-  (<| [_ a] (deep [a] empty-tree [v]))
-  (|> [_ a] (deep [v] empty-tree [a]))
+  (<| [_ a] (deep-tree [a] empty-tree [v]))
+  (|> [_ a] (deep-tree [v] empty-tree [a]))
   (viewl [_] [v empty-tree])
   (viewr [_] [v empty-tree]))
 
@@ -44,24 +44,24 @@
 (defn to-tree [[a b c d]]
   (cond
     (nil? b) (single-tree a)
-    (nil? c) (deep [a] empty-tree [b])
-    (nil? d) (deep [a b] empty-tree [c])
-    :else (deep [a b] empty-tree [c d])))
+    (nil? c) (deep-tree [a] empty-tree [b])
+    (nil? d) (deep-tree [a b] empty-tree [c])
+    :else (deep-tree [a b] empty-tree [c d])))
 
 (defn deepl [pr m sf]
   (if (seq pr)
-    (deep pr m sf)
+    (deep-tree pr m sf)
     (let [[a m'] (viewl m)]
       (if a
-        (deep a m' sf)
+        (deep-tree a m' sf)
         (to-tree sf)))))
 
 (defn deepr [pr m sf]
   (if (seq sf)
-    (deep pr m sf)
+    (deep-tree pr m sf)
     (let [[a m'] (viewr m)]
       (if a
-        (deep pr m' a)
+        (deep-tree pr m' a)
         (to-tree pr)))))
 
 (deftype Deep [pr m sf]
@@ -88,7 +88,7 @@
   (viewr [_]
     [(last sf) (deepr pr m (vec (butlast sf)))]))
 
-(defn deep [pr m sf]
+(defn deep-tree [pr m sf]
   (Deep. pr m sf))
 
 
@@ -111,3 +111,10 @@
     (-write writer " ")
     (pr-writer (.-sf coll) writer opts)
     (-write writer ")")))
+
+
+(comment
+  (let [layer3 (ft/Empty.)
+        layer2 (ft/Deep. [[\i \s] [\i \s]] layer3 [[\n \o \t] [\a \t]])
+        layer1 (ft/Deep. [\t \h] layer2 [\r \e \e])]
+    ))

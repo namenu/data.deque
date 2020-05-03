@@ -9,7 +9,7 @@
 ;;             | Single a
 ;;             | Deep (Digit a) (FingerTree (Node a)) (Digit a)
 
-(defn digit
+(defn ^:static-fns digit
   ([a] (array a))
   ([a b] (array a b))
   ([a b c] (array a b c))
@@ -30,12 +30,12 @@
   (peekl [coll])
   (peekr [coll]))
 
-(declare empty-tree single-tree deep-tree)
+(declare empty-tree ->Single ->Deep)
 
 (deftype Empty []
   IFingerTree
-  (<| [_ e] (single-tree e))
-  (|> [_ e] (single-tree e))
+  (<| [_ e] (->Single e))
+  (|> [_ e] (->Single e))
   (viewl [_] [nil empty-tree])
   (viewr [_] [nil empty-tree])
   (peekl [_] nil)
@@ -45,38 +45,35 @@
 
 (deftype Single [v]
   IFingerTree
-  (<| [_ a] (deep-tree (digit a) empty-tree (digit v)))
-  (|> [_ a] (deep-tree (digit v) empty-tree (digit a)))
+  (<| [_ a] (->Deep (digit a) empty-tree (digit v)))
+  (|> [_ a] (->Deep (digit v) empty-tree (digit a)))
   (viewl [_] [v empty-tree])
   (viewr [_] [v empty-tree])
   (peekl [_] v)
   (peekr [_] v))
 
-(defn single-tree [x]
-  (Single. x))
-
 (defn to-tree [[a b c d]]
   (cond
-    (nil? b) (single-tree a)
-    (nil? c) (deep-tree (digit a) empty-tree (digit b))
-    (nil? d) (deep-tree (digit a b) empty-tree (digit c))
-    :else (deep-tree (digit a b) empty-tree (digit c d))))
+    (nil? b) (->Single a)
+    (nil? c) (->Deep (digit a) empty-tree (digit b))
+    (nil? d) (->Deep (digit a b) empty-tree (digit c))
+    :else (->Deep (digit a b) empty-tree (digit c d))))
 
 (defn deepl [pr m sf]
   (if (zero? (alength pr))
     (let [[a m'] (viewl m)]
       (if a
-        (deep-tree a m' sf)
+        (->Deep a m' sf)
         (to-tree sf)))
-    (deep-tree pr m sf)))
+    (->Deep pr m sf)))
 
 (defn deepr [pr m sf]
   (if (zero? (alength sf))
     (let [[a m'] (viewr m)]
       (if a
-        (deep-tree pr m' a)
+        (->Deep pr m' a)
         (to-tree pr)))
-    (deep-tree pr m sf)))
+    (->Deep pr m sf)))
 
 (deftype Deep [pr m sf]
   IFingerTree
@@ -109,9 +106,6 @@
 
   (peekr [_]
     (aget sf (- (alength sf) 1))))
-
-(defn deep-tree [pr m sf]
-  (Deep. pr m sf))
 
 
 (extend-protocol IPrintWithWriter

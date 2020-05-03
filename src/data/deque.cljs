@@ -9,16 +9,16 @@
   (remove-last [coll])
   (peek-last [coll]))
 
-(deftype PersistentDeque [^not-native tree]
+(deftype ^:private PersistentDeque [tree ^:mutable __hash]
   IDeque
-  (add-first [_ v] (PersistentDeque. (<| tree v)))
-  (add-last [_ v] (PersistentDeque. (|> tree v)))
+  (add-first [_ v] (PersistentDeque. (<| tree v) __hash))
+  (add-last [_ v] (PersistentDeque. (|> tree v) __hash))
 
   (peek-first [_] (peekl tree))
   (peek-last [_] (peekr tree))
 
-  (remove-first [_] (PersistentDeque. (second (viewl tree))))
-  (remove-last [_] (PersistentDeque. (second (viewr tree))))
+  (remove-first [_] (PersistentDeque. (second (viewl tree)) __hash))
+  (remove-last [_] (PersistentDeque. (second (viewr tree)) __hash))
 
   IStack
   (-peek [this] (peek-last this))
@@ -31,6 +31,10 @@
   (-empty [_] (.-EMPTY PersistentDeque))
 
   ISequential
+
+  IHash
+  (-hash [coll] (caching-hash coll hash-ordered-coll __hash))
+
   ISeqable
   (-seq [this]
     (if (instance? ft/Empty tree)
@@ -45,8 +49,8 @@
   (-pr-writer [coll writer opts]
     (pr-sequential-writer writer pr-writer "(" " " ")" opts coll)))
 
-(set! (.-EMPTY PersistentDeque) (PersistentDeque. empty-tree))
+(set! (.-EMPTY PersistentDeque) (PersistentDeque. empty-tree nil))
 (def empty-deque (.-EMPTY PersistentDeque))
 
 (defn deque [& coll]
-  (PersistentDeque. (reduce |> empty-tree coll)))
+  (PersistentDeque. (reduce |> empty-tree coll) nil))

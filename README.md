@@ -17,14 +17,14 @@ core.data.finger-tree와 다른 점?
 
 성능 개선 idea:
  - Digit, Node에 JS array 사용
- - transient
+ - supply [collection hashes](https://clojure.org/reference/data_structures#_clojure_collection_hashes) 
  - peek 하는 경우 tree rotation이 일어나지 않도록 lazy하게 구현?
+ - transient
 
 기타 TODO:
  - banker's deque와 성능 비교 
- - 기타 프로토콜 구현
-   - PersistentVector/PersistentQueue와 구색 맞추기, es6-iterator 지원 등
- - ICount를 지원할 것인가?
+ - 기타 프로토콜 구현 (PersistentVector/PersistentQueue와 구색 맞추기)
+   - ICloneable, IEquiv, ICounted, IIterable, IMeta
  - :bundle 타겟으로 빌드
 
 Reference

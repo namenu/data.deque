@@ -47,7 +47,7 @@
   (testing "finger-tree impl"
     (is (= 386151 (time (play (dq/deque 0) 459 71790))))
     (is (= 3211264152 (time (play (dq/deque 0) 459 7179000))))
-    "Elapsed time: 226.360000 msecs"
-    "Elapsed time: 18579.975000 msecs"))
+    "Elapsed time: 175.460000 msecs"
+    "Elapsed time: 13836.885000 msecs"))
 
 (run-tests)

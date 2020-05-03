@@ -7,6 +7,7 @@ ClojureScript에서 사용 가능한 finger-tree 기반의 persistent deque를 �
  - Banker's deque는 stack은 빠른 반면 queue는 느린 성능을 보인다.  
 
 core.data.finger-tree와 다른 점?
+ - 20%+ faster than finger-tree/double-list
  - ClojureScript 지원
    - 뿐만 아니라 js용으로 만들어진 persistent deque 자료구조도 없음.
  - measure 관련 기능 제거

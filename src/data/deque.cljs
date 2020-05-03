@@ -1,5 +1,5 @@
 (ns data.deque
-  (:require [data.fingertree :as ft :refer [<| |> viewl viewr empty-tree]]))
+  (:require [data.fingertree :as ft :refer [<| |> viewl viewr peekl peekr empty-tree]]))
 
 (defprotocol IDeque
   (add-first [coll e])
@@ -9,13 +9,13 @@
   (remove-last [coll])
   (peek-last [coll]))
 
-(deftype PersistentDeque [tree]
+(deftype PersistentDeque [^not-native tree]
   IDeque
   (add-first [_ v] (PersistentDeque. (<| tree v)))
   (add-last [_ v] (PersistentDeque. (|> tree v)))
 
-  (peek-first [_] (first (viewl tree)))
-  (peek-last [_] (first (viewr tree)))
+  (peek-first [_] (peekl tree))
+  (peek-last [_] (peekr tree))
 
   (remove-first [_] (PersistentDeque. (second (viewl tree))))
   (remove-last [_] (PersistentDeque. (second (viewr tree))))

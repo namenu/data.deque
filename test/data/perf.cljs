@@ -43,11 +43,11 @@
         (recur circle (inc marble) (update score-map player (fnil + 0) score))))))
 
 
-(deftest test-day8
+(deftest test-day9
   (testing "finger-tree impl"
     (is (= 386151 (time (play (dq/deque 0) 459 71790))))
     (is (= 3211264152 (time (play (dq/deque 0) 459 7179000))))
-    "Elapsed time: 1237.000000 msecs"
-    "Elapsed time: 99522.000000 msecs"))
+    "Elapsed time: 226.360000 msecs"
+    "Elapsed time: 18579.975000 msecs"))
 
-;(run-tests)
+(run-tests)

@@ -15,13 +15,20 @@
   ([a b c] (array a b c))
   ([a b c d] (array a b c d)))
 
+(defn node
+  ([a b] (array a b))
+  ([a b c] (array a b c)))
+
 (defprotocol IFingerTree
   ;; <|, |> : FingerTree a -> a -> FingerTree a
   (<| [coll e])
   (|> [coll e])
   ;; viewl, viewr : FingerTree a -> View a (FingerTree a)
   (viewl [coll])
-  (viewr [coll]))
+  (viewr [coll])
+  ;; peekl, peekr : FingerTree a -> a | nil
+  (peekl [coll])
+  (peekr [coll]))
 
 (declare empty-tree single-tree deep-tree)
 
@@ -30,7 +37,9 @@
   (<| [_ e] (single-tree e))
   (|> [_ e] (single-tree e))
   (viewl [_] [nil empty-tree])
-  (viewr [_] [nil empty-tree]))
+  (viewr [_] [nil empty-tree])
+  (peekl [_] nil)
+  (peekr [_] nil))
 
 (def empty-tree (Empty.))
 
@@ -39,13 +48,12 @@
   (<| [_ a] (deep-tree (digit a) empty-tree (digit v)))
   (|> [_ a] (deep-tree (digit v) empty-tree (digit a)))
   (viewl [_] [v empty-tree])
-  (viewr [_] [v empty-tree]))
+  (viewr [_] [v empty-tree])
+  (peekl [_] v)
+  (peekr [_] v))
 
 (defn single-tree [x]
   (Single. x))
-
-(defn to-digit [node]
-  (clj->js node))
 
 (defn to-tree [[a b c d]]
   (cond
@@ -58,7 +66,7 @@
   (if (zero? (alength pr))
     (let [[a m'] (viewl m)]
       (if a
-        (deep-tree (to-digit a) m' sf)
+        (deep-tree a m' sf)
         (to-tree sf)))
     (deep-tree pr m sf)))
 
@@ -66,7 +74,7 @@
   (if (zero? (alength sf))
     (let [[a m'] (viewr m)]
       (if a
-        (deep-tree pr m' (to-digit a))
+        (deep-tree pr m' a)
         (to-tree pr)))
     (deep-tree pr m sf)))
 
@@ -78,7 +86,7 @@
       2 (Deep. (digit x (aget pr 0) (aget pr 1)) m sf)
       3 (Deep. (digit x (aget pr 0) (aget pr 1) (aget pr 2)) m sf)
       4 (Deep. (digit x (aget pr 0))
-               (<| m [(aget pr 1) (aget pr 2) (aget pr 3)])
+               (<| m (node (aget pr 1) (aget pr 2) (aget pr 3)))
                sf)))
 
   (|> [_ x]
@@ -87,16 +95,20 @@
       2 (Deep. pr m (digit (aget sf 0) (aget sf 1) x))
       3 (Deep. pr m (digit (aget sf 0) (aget sf 1) (aget sf 2) x))
       4 (Deep. pr
-               (|> m [(aget sf 0) (aget sf 1) (aget sf 2)])
+               (|> m (node (aget sf 0) (aget sf 1) (aget sf 2)))
                (digit (aget sf 3) x))))
 
   (viewl [_]
-    ;; first -> aget
     [(first pr) (deepl (.slice pr 1) m sf)])
 
   (viewr [_]
-    ;; last -> aget
-    [(last sf) (deepr pr m (.slice sf 0 -1))]))
+    [(last sf) (deepr pr m (.slice sf 0 -1))])
+
+  (peekl [_]
+    (aget pr 0))
+
+  (peekr [_]
+    (aget sf (- (alength sf) 1))))
 
 (defn deep-tree [pr m sf]
   (Deep. pr m sf))

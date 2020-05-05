@@ -9,16 +9,32 @@
   (remove-last [coll])
   (peek-last [coll]))
 
-(deftype ^:private PersistentDeque [tree ^:mutable __hash]
+(deftype ^:private PersistentDeque [meta count tree ^:mutable __hash]
   IDeque
-  (add-first [_ v] (PersistentDeque. (<| tree v) __hash))
-  (add-last [_ v] (PersistentDeque. (|> tree v) __hash))
+  (add-first [_ v] (PersistentDeque. meta (inc count) (<| tree v) __hash))
+  (add-last [_ v] (PersistentDeque. meta (inc count) (|> tree v) __hash))
 
   (peek-first [_] (peekl tree))
   (peek-last [_] (peekr tree))
 
-  (remove-first [_] (PersistentDeque. (second (viewl tree)) __hash))
-  (remove-last [_] (PersistentDeque. (second (viewr tree)) __hash))
+  (remove-first [_] (PersistentDeque. meta (max (dec count) 0) (second (viewl tree)) __hash))
+  (remove-last [_] (PersistentDeque. meta (max (dec count) 0) (second (viewr tree)) __hash))
+
+  ICloneable
+  (-clone [_] (PersistentDeque. meta count tree __hash))
+
+  IWithMeta
+  (-with-meta [coll new-meta]
+    (if (identical? new-meta meta)
+      coll
+      (PersistentDeque. new-meta count tree __hash)))
+
+  IMeta
+  (-meta [_] meta)
+
+  ISeq
+  (-first [this] (peek-first this))
+  (-rest [this] (remove-first this))
 
   IStack
   (-peek [this] (peek-last this))
@@ -31,6 +47,8 @@
   (-empty [_] (.-EMPTY PersistentDeque))
 
   ISequential
+  IEquiv
+  (-equiv [coll other] (equiv-sequential coll other))
 
   IHash
   (-hash [coll] (caching-hash coll hash-ordered-coll __hash))
@@ -41,16 +59,16 @@
       nil
       this))
 
-  ISeq
-  (-first [this] (peek-first this))
-  (-rest [this] (remove-first this))
+  ICounted
+  (-count [_] count)
 
   IPrintWithWriter
   (-pr-writer [coll writer opts]
     (pr-sequential-writer writer pr-writer "(" " " ")" opts coll)))
 
-(set! (.-EMPTY PersistentDeque) (PersistentDeque. empty-tree nil))
+(set! (.-EMPTY PersistentDeque) (PersistentDeque. nil 0 empty-tree nil))
+
 (def empty-deque (.-EMPTY PersistentDeque))
 
 (defn deque [& coll]
-  (PersistentDeque. (reduce |> empty-tree coll) nil))
+  (into empty-deque coll))

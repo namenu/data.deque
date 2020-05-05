@@ -1,4 +1,4 @@
-(ns data.fingertree
+(ns data.finger-tree
   (:refer-clojure :exclude [Single ->Single Empty ->Empty]))
 
 ;; finger-tree
@@ -127,10 +127,3 @@
     (-write writer " ")
     (pr-writer (.-sf coll) writer opts)
     (-write writer ")")))
-
-
-(comment
-  (let [layer3 (ft/Empty.)
-        layer2 (ft/Deep. [[\i \s] [\i \s]] layer3 [[\n \o \t] [\a \t]])
-        layer1 (ft/Deep. [\t \h] layer2 [\r \e \e])]
-    ))

@@ -15,16 +15,19 @@ core.data.finger-tree와 다른 점?
  - concatatenation/split 지원하지 않음
    - deque에는 불필요한 인터페이스
 
-성능 개선 idea:
+성능 개선 방안:
  - Digit, Node에 JS array 사용
+ - peek 하는 경우 tree rotation이 일어나지 않도록 (peekl/peekr)
+ - ICounted
  - supply [collection hashes](https://clojure.org/reference/data_structures#_clojure_collection_hashes) 
- - peek 하는 경우 tree rotation이 일어나지 않도록 lazy하게 구현?
- - transient
 
+기타:
+ - conform basic collection protocols (like PersistentVector/PersistentQueue)
+   - ICloneable, IEquiv, ICounted, IIterable, IMeta 
+ 
 기타 TODO:
+ - transient
  - banker's deque와 성능 비교 
- - 기타 프로토콜 구현 (PersistentVector/PersistentQueue와 구색 맞추기)
-   - ICloneable, IEquiv, ICounted, IIterable, IMeta
  - :bundle 타겟으로 빌드
 
 Reference

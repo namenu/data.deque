@@ -17,7 +17,7 @@
       (-> circle (pop) (dq/add-first v))))
   (cw [circle]
     (let [v (first circle)]
-      (-> circle (rest) (conj v))))
+      (-> circle (dq/remove-first) (conj v))))
   (circle-push [circle v]
     (conj circle v))
   (circle-pop [circle]
@@ -47,7 +47,7 @@
   (testing "finger-tree impl"
     (is (= 386151 (time (play (dq/deque 0) 459 71790))))
     (is (= 3211264152 (time (play (dq/deque 0) 459 7179000))))
-    "Elapsed time: 175.460000 msecs"
-    "Elapsed time: 13836.885000 msecs"))
+    "Elapsed time: 136.655000 msecs"
+    "Elapsed time: 13355.205000 msecs"))
 
 (run-tests)

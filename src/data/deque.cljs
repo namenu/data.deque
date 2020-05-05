@@ -1,5 +1,5 @@
 (ns data.deque
-  (:require [data.fingertree :as ft :refer [<| |> viewl viewr peekl peekr empty-tree]]))
+  (:require [data.finger-tree :refer [<| |> viewl viewr peekl peekr empty-tree]]))
 
 (defprotocol IDeque
   (add-first [coll e])

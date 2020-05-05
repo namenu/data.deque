@@ -9,16 +9,74 @@
   (remove-last [coll])
   (peek-last [coll]))
 
+(deftype ^:private PersistentDequeSeq [meta tree ^:mutable __hash]
+  Object
+  (toString [coll]
+    (pr-str* coll))
+  (equiv [this other]
+    (-equiv this other))
+
+  IWithMeta
+  (-with-meta [coll new-meta]
+    (if (identical? new-meta meta)
+      coll
+      (PersistentDequeSeq. new-meta tree __hash)))
+
+  IMeta
+  (-meta [_] meta)
+
+  ISeq
+  (-first [_] (peekl tree))
+  (-rest  [coll]
+    (let [tree' (second (viewl tree))]
+      (if (identical? tree' empty-tree)
+        (-empty coll)
+        (PersistentDequeSeq. meta tree' nil))))
+
+  INext
+  (-next [_]
+    (let [tree' (second (viewl tree))]
+      (if-not (identical? tree' empty-tree)
+        (PersistentDequeSeq. meta tree' nil))))
+
+  ICollection
+  (-conj [coll o] (cons o coll))
+
+  IEmptyableCollection
+  (-empty [_] (-with-meta (.-EMPTY List) meta))
+
+  ISequential
+  IEquiv
+  (-equiv [coll other] (equiv-sequential coll other))
+
+  IHash
+  (-hash [coll] (caching-hash coll hash-ordered-coll __hash))
+
+  ISeqable
+  (-seq [coll] coll)
+
+  IPrintWithWriter
+  (-pr-writer [coll writer opts]
+    (pr-sequential-writer writer pr-writer "(" " " ")" opts coll)))
+
+(es6-iterable PersistentDequeSeq)
+
 (deftype ^:private PersistentDeque [meta count tree ^:mutable __hash]
   IDeque
-  (add-first [_ v] (PersistentDeque. meta (inc count) (<| tree v) __hash))
-  (add-last [_ v] (PersistentDeque. meta (inc count) (|> tree v) __hash))
+  (add-first [_ v] (PersistentDeque. meta (inc count) (<| tree v) nil))
+  (add-last [_ v] (PersistentDeque. meta (inc count) (|> tree v) nil))
 
   (peek-first [_] (peekl tree))
   (peek-last [_] (peekr tree))
 
-  (remove-first [_] (PersistentDeque. meta (max (dec count) 0) (second (viewl tree)) __hash))
-  (remove-last [_] (PersistentDeque. meta (max (dec count) 0) (second (viewr tree)) __hash))
+  (remove-first [_] (PersistentDeque. meta (max (dec count) 0) (second (viewl tree)) nil))
+  (remove-last [_] (PersistentDeque. meta (max (dec count) 0) (second (viewr tree)) nil))
+
+  Object
+  (toString [coll]
+    (pr-str* coll))
+  (equiv [this other]
+    (-equiv this other))
 
   ICloneable
   (-clone [_] (PersistentDeque. meta count tree __hash))
@@ -33,8 +91,8 @@
   (-meta [_] meta)
 
   ISeq
-  (-first [this] (peek-first this))
-  (-rest [this] (remove-first this))
+  (-first [coll] (peek-first coll))
+  (-rest [coll] (rest (seq coll)))
 
   IStack
   (-peek [this] (peek-last this))
@@ -51,24 +109,24 @@
   (-equiv [coll other] (equiv-sequential coll other))
 
   IHash
-  (-hash [coll] (caching-hash coll hash-ordered-coll __hash))
+  (-hash [coll]
+    (caching-hash coll hash-ordered-coll __hash))
 
   ISeqable
-  (-seq [this]
-    (if (instance? ft/Empty tree)
-      nil
-      this))
+  (-seq [_]
+    (if-not (identical? empty-tree tree)
+      (PersistentDequeSeq. nil tree nil)))
 
   ICounted
   (-count [_] count)
 
   IPrintWithWriter
   (-pr-writer [coll writer opts]
-    (pr-sequential-writer writer pr-writer "(" " " ")" opts coll)))
+    (pr-sequential-writer writer pr-writer "#deque [" " " "]" opts (seq coll))))
 
 (set! (.-EMPTY PersistentDeque) (PersistentDeque. nil 0 empty-tree nil))
 
-(def empty-deque (.-EMPTY PersistentDeque))
+(es6-iterable PersistentDeque)
 
 (defn deque [& coll]
-  (into empty-deque coll))
+  (into (.-EMPTY PersistentDeque) coll))

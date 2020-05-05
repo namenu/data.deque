@@ -1,6 +1,6 @@
 (ns data.tests
   (:require [cljs.test :refer-macros [deftest is testing run-tests]]
-            [data.deque :refer [empty-deque remove-first remove-last peek-first peek-last]]))
+            [data.deque :refer [empty-deque deque add-first add-last remove-first remove-last peek-first peek-last]]))
 
 (deftest Remove-From-Empty-Deques
   (is (= () (remove-first empty-deque)))
@@ -15,5 +15,9 @@
 (deftest empty-test
   (let [non-empty (conj empty-deque 10)]
     (is (empty? (empty non-empty)))))
+
+(deftest equiv-test
+  (is (= (add-last (deque 0) 1)
+         (add-first (deque 1) 0))))
 
 (run-tests)

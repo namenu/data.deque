@@ -1,6 +1,8 @@
 ## Persistent Deque (Double Ended Queue)
 
 ClojureScript에서 사용 가능한 finger-tree 기반의 persistent deque를 구현
+삽입 삭제 연산: O(1) (amortized)
+조회 : O(1)
 
 왜 finger-tree인가?
  - Catenable deque (Kaplan & Tarjan, 1995; Okasaki, 1997)는 효과적인 삽입, 삭제를 보장하지 않는다.

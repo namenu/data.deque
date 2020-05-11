@@ -1,4 +1,4 @@
-(ns data.tests
+(ns cljs.data.tests
   (:require [cljs.test :refer-macros [deftest is testing run-tests]]
             [data.deque :refer [PersistentDeque deque add-first add-last remove-first remove-last peek-first peek-last]]
             [data.finger-tree :as ft]))
@@ -22,6 +22,15 @@
 (deftest equiv-test
   (is (= (add-last (deque 0) 1)
          (add-first (deque 1) 0))))
+
+(deftest meta-test
+  (let [d0 (with-meta empty-deque -1)]
+    (is (= -1 (meta d0)))
+    (let [d1 (add-first d0 0)]
+      (is (= -1
+             (meta d1)
+             (meta (remove-last d1))
+             (meta (empty d1)))))))
 
 (deftest ft-test
   (let [layer3 (ft/Empty.)

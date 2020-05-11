@@ -90,9 +90,12 @@
   IMeta
   (-meta [_] meta)
 
-  ISeq
-  (-first [coll] (peek-first coll))
-  (-rest [coll] (rest (seq coll)))
+  ;; - Need not to be a ISeq.
+  ;; Note cljs.core.PersistentQueue acts as ISeq while clojure.lang.PersistentQueue does not.
+  ;; This discrepancy leads me to comment this out.
+  ;ISeq
+  ;(-first [coll] (peek-first coll))
+  ;(-rest [coll] (rest (seq coll)))
 
   IStack
   (-peek [this] (peek-last this))
@@ -102,7 +105,7 @@
   (-conj [this v] (add-last this v))
 
   IEmptyableCollection
-  (-empty [_] (.-EMPTY PersistentDeque))
+  (-empty [_] (with-meta (.-EMPTY PersistentDeque) meta))
 
   ISequential
   IEquiv

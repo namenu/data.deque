@@ -9,15 +9,25 @@
 ;;             | Single a
 ;;             | Deep (Digit a) (FingerTree (Node a)) (Digit a)
 
-(defn ^:static-fns digit
-  ([a] (array a))
-  ([a b] (array a b))
-  ([a b c] (array a b c))
-  ([a b c d] (array a b c d)))
+#?(:cljs
+   (defn digit
+     ([a] (array a))
+     ([a b] (array a b))
+     ([a b c] (array a b c))
+     ([a b c d] (array a b c d)))
 
-(defn node
-  ([a b] (array a b))
-  ([a b c] (array a b c)))
+   :clj
+   (defn digit [& args]
+     (object-array args)))
+
+#?(:cljs
+   (defn node
+     ([a b] (array a b))
+     ([a b c] (array a b c)))
+
+   :clj
+   (defn node [& args]
+     (objecrt-array args)))
 
 (defprotocol IFingerTree
   ;; <|, |> : FingerTree a -> a -> FingerTree a
@@ -108,22 +118,23 @@
     (aget sf (- (alength sf) 1))))
 
 
-(extend-protocol IPrintWithWriter
-  Empty
-  (-pr-writer [_ writer _]
-    (-write writer "Empty"))
+#?(:cljs
+   (extend-protocol IPrintWithWriter
+     Empty
+     (-pr-writer [_ writer _]
+       (-write writer "Empty"))
 
-  Single
-  (-pr-writer [coll writer opts]
-    (-write writer "Single: ")
-    (pr-writer (.-v coll) writer opts))
+     Single
+     (-pr-writer [coll writer opts]
+       (-write writer "Single: ")
+       (pr-writer (.-v coll) writer opts))
 
-  Deep
-  (-pr-writer [coll writer opts]
-    (-write writer "(")
-    (pr-writer (.-pr coll) writer opts)
-    (-write writer " ")
-    (pr-writer (.-m coll) writer opts)
-    (-write writer " ")
-    (pr-writer (.-sf coll) writer opts)
-    (-write writer ")")))
+     Deep
+     (-pr-writer [coll writer opts]
+       (-write writer "(")
+       (pr-writer (.-pr coll) writer opts)
+       (-write writer " ")
+       (pr-writer (.-m coll) writer opts)
+       (-write writer " ")
+       (pr-writer (.-sf coll) writer opts)
+       (-write writer ")"))))

@@ -1,5 +1,5 @@
 ;;; https://adventofcode.com/2018/day/9
-(ns data.perf
+(ns cljs.data.perf
   (:require [cljs.test :refer-macros [deftest testing is run-tests]]
             [data.deque :as dq]))
 

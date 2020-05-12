@@ -9,7 +9,7 @@
   (remove-last [coll])
   (peek-last [coll]))
 
-(deftype ^:private PersistentDequeSeq [meta tree ^:mutable __hash]
+(deftype PersistentDequeSeq [meta tree ^:mutable __hash]
   Object
   (toString [coll]
     (pr-str* coll))
@@ -61,7 +61,7 @@
 
 (es6-iterable PersistentDequeSeq)
 
-(deftype ^:private PersistentDeque [meta count tree ^:mutable __hash]
+(deftype PersistentDeque [meta count tree ^:mutable __hash]
   IDeque
   (add-first [_ v] (PersistentDeque. meta (inc count) (<| tree v) nil))
   (add-last [_ v] (PersistentDeque. meta (inc count) (|> tree v) nil))

@@ -1,6 +1,8 @@
 (ns data.finger-tree
   (:refer-clojure :exclude [Single ->Single Empty ->Empty]))
 
+;(set! *warn-on-reflection* true)
+
 ;; finger-tree
 ;;
 ;; Digit := One a | Two a a | Three a a a | Four a a a a
@@ -27,7 +29,7 @@
 
    :clj
    (defn node [& args]
-     (objecrt-array args)))
+     (object-array args)))
 
 (defprotocol IFingerTree
   ;; <|, |> : FingerTree a -> a -> FingerTree a
@@ -69,7 +71,7 @@
     (nil? d) (->Deep (digit a b) empty-tree (digit c))
     :else (->Deep (digit a b) empty-tree (digit c d))))
 
-(defn deepl [pr m sf]
+(defn deepl [^objects pr m sf]
   (if (zero? (alength pr))
     (let [[a m'] (viewl m)]
       (if a
@@ -77,7 +79,7 @@
         (to-tree sf)))
     (->Deep pr m sf)))
 
-(defn deepr [pr m sf]
+(defn deepr [pr m ^objects sf]
   (if (zero? (alength sf))
     (let [[a m'] (viewr m)]
       (if a
@@ -85,7 +87,15 @@
         (to-tree pr)))
     (->Deep pr m sf)))
 
-(deftype Deep [pr m sf]
+(defn cut-first [^objects pr]
+  #?(:cljs (.slice pr 1)
+     :clj  (java.util.Arrays/copyOfRange pr 1 (alength pr))))
+
+(defn cut-last [^objects sf]
+  #?(:cljs (.slice sf 0 -1)
+     :clj  (java.util.Arrays/copyOf sf (dec (alength sf)))))
+
+(deftype Deep [^objects pr m ^objects sf]
   IFingerTree
   (<| [_ x]
     (case (alength pr)
@@ -106,10 +116,10 @@
                (digit (aget sf 3) x))))
 
   (viewl [_]
-    [(first pr) (deepl (.slice pr 1) m sf)])
+    [(first pr) (deepl (cut-first pr) m sf)])
 
   (viewr [_]
-    [(last sf) (deepr pr m (.slice sf 0 -1))])
+    [(last sf) (deepr pr m (cut-last sf))])
 
   (peekl [_]
     (aget pr 0))

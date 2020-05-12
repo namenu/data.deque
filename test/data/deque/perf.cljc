@@ -1,8 +1,7 @@
 ;;; https://adventofcode.com/2018/day/9
 (ns data.deque.perf
-  (:require [clojure.test :refer [deftest testing is run-tests]]
-            [data.deque :as dq])
-  (:import (data.deque PersistentDeque)))
+  (:require [data.deque :as dq])
+  #?(:clj (:import (data.deque PersistentDeque))))
 
 (defprotocol ICircle
   (ccw [_])
@@ -11,7 +10,8 @@
   (circle-pop [_])
   (circle-peek [_]))
 
-(extend-type PersistentDeque
+(extend-type #?(:cljs dq/PersistentDeque
+                :clj  PersistentDeque)
   ICircle
   (ccw [circle]
     (let [v (peek circle)]
@@ -43,17 +43,17 @@
             player (mod marble num-players)]
         (recur circle (inc marble) (update score-map player (fnil + 0) score))))))
 
+(comment
+  (require '[taoensso.tufte :as tufte :refer [defnp p profiled profile]])
 
-(deftest test-day9
-  (testing "finger-tree impl"
-    (is (= 386151 (time (play (dq/deque 0) 459 71790))))
-    #_(is (= 3211264152 (time (play (dq/deque 0) 459 7179000))))
-    "Elapsed time: 136.655000 msecs"
-    "Elapsed time: 13355.205000 msecs"))
+  (tufte/add-basic-println-handler! {})
 
-(run-tests)
+  (profile
+    {}
+    (dotimes [_ 5]
+      (p :small (play (dq/deque 0) 459 71790)))
+    (dotimes [_ 4]
+      (p :medium (play (dq/deque 0) 459 717900)))
+    (dotimes [_ 3]
+      (p :large (play (dq/deque 0) 459 7179000)))))
 
-;(require '[taoensso.tufte :as tufte :refer (defnp p profiled profile)])
-#_(-> (dq/deque 1 2 3 4 5)
-    (cw)
-    (seq))

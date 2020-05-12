@@ -1,9 +1,12 @@
 (ns data.deque.tests
-  (:require [clojure.test :refer [deftest is testing run-tests]]
+  (:require #?(:cljs [cljs.test :refer-macros [deftest is testing run-tests]]
+               :clj  [clojure.test :refer [deftest is testing run-tests]])
             [data.deque :refer [deque add-first add-last remove-first remove-last peek-first peek-last]]
             [data.finger-tree :as ft]))
 
-(def empty-deque data.deque/EMPTY)
+(def empty-deque
+  #?(:cljs (.-EMPTY data.deque.PersistentDeque)
+     :clj  data.deque/EMPTY))
 
 (deftest Remove-From-Empty-Deques
   (is (= () (remove-first empty-deque)))
@@ -27,23 +30,14 @@
   (is (= () empty-deque))
   (is (= (add-first empty-deque 1) [1])))
 
-(deftest ft-test
-  (let [layer3 (ft/->Empty)
-        layer2 (ft/->Deep (ft/digit (ft/node \i \s) (ft/node \i \s))
-                          layer3
-                          (ft/digit (ft/node \n \o \t) (ft/node \a \t)))
-        layer1 (ft/->Deep (ft/digit \t \h)
-                          layer2
-                          (ft/digit \r \e \e))]
-    #_#_(is (= (seq (.pr layer1)) [\t \h]))
-    (is (= (seq (.-sf layer1)) [\r \e \e]))))
+(deftest meta-test
+  (let [m  {:m -1}
+        d0 (with-meta empty-deque m)]
+    (is (= m (meta d0)))
+    (let [d1 (add-first d0 0)]
+      (is (= m
+             (meta d1)
+             (meta (remove-last d1))
+             (meta (empty d1)))))))
 
 (run-tests)
-
-(-> empty-deque
-    (add-first 1)
-    (add-first 2)
-    (add-last 3)
-    (add-last 4)
-    (conj 10)
-    seq)

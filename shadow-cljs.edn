@@ -1,0 +1,16 @@
+{:deps
+ true
+
+ :builds
+ {:app {:target   :browser
+        :modules  {:main {:entries [data.deque]}}
+        :devtools {:http-root "public"
+                   :http-port 6500}}
+  :npm {:target     :npm-module
+        :entries    [data.deque]
+        :output-dir "out"
+        :devtools   {:http-root "public"
+                     :http-port 6500}}}
+
+ :nrepl
+ {:port 9000}}

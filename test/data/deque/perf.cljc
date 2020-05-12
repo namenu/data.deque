@@ -1,6 +1,7 @@
 ;;; https://adventofcode.com/2018/day/9
 (ns data.deque.perf
-  (:require [data.deque :as dq])
+  (:require [data.deque :as dq]
+            [taoensso.tufte :as tufte :refer [defnp p profiled profile]])
   #?(:clj (:import (data.deque PersistentDeque))))
 
 (defprotocol ICircle
@@ -43,17 +44,15 @@
             player (mod marble num-players)]
         (recur circle (inc marble) (update score-map player (fnil + 0) score))))))
 
-(comment
-  (require '[taoensso.tufte :as tufte :refer [defnp p profiled profile]])
 
-  (tufte/add-basic-println-handler! {})
+(tufte/add-basic-println-handler! {})
 
-  (profile
-    {}
-    (dotimes [_ 5]
-      (p :small (play (dq/deque 0) 459 71790)))
-    (dotimes [_ 4]
-      (p :medium (play (dq/deque 0) 459 717900)))
-    (dotimes [_ 3]
-      (p :large (play (dq/deque 0) 459 7179000)))))
+(profile
+  {}
+  (dotimes [_ 5]
+    (p :small (play (dq/deque 0) 459 71790)))
+  (dotimes [_ 4]
+    (p :medium (play (dq/deque 0) 459 717900)))
+  (dotimes [_ 3]
+    (p :large (play (dq/deque 0) 459 7179000))))
 

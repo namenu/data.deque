@@ -91,7 +91,7 @@
   (-meta [_] meta)
 
   ;; - Need not to be a ISeq.
-  ;; Note cljs.core.PersistentQueue acts as ISeq while clojure.lang.PersistentQueue does not.
+  ;; Note cljs.core.PersistentQueue acts as ISeq while Clojure's one does not.
   ;; This discrepancy leads me to comment this out.
   ;ISeq
   ;(-first [coll] (peek-first coll))

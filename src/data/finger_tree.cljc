@@ -148,3 +148,14 @@
        (-write writer " ")
        (pr-writer (.-sf coll) writer opts)
        (-write writer ")"))))
+
+
+(comment
+  (let [layer3 (ft/->Empty)
+        layer2 (ft/->Deep (ft/digit (ft/node \i \s) (ft/node \i \s))
+                          layer3
+                          (ft/digit (ft/node \n \o \t) (ft/node \a \t)))
+        layer1 (ft/->Deep (ft/digit \t \h)
+                          layer2
+                          (ft/digit \r \e \e))]
+    ))

@@ -19,7 +19,7 @@
      ([a b c d] (array a b c d)))
 
    :clj
-   (defn digit [& args]
+   (defn ^:static digit [& args]
      (object-array args)))
 
 #?(:cljs
@@ -28,7 +28,7 @@
      ([a b c] (array a b c)))
 
    :clj
-   (defn node [& args]
+   (defn ^:static node [& args]
      (object-array args)))
 
 (defprotocol IFingerTree
@@ -93,7 +93,7 @@
 
 (defn cut-last [^objects sf]
   #?(:cljs (.slice sf 0 -1)
-     :clj  (java.util.Arrays/copyOf sf (dec (alength sf)))))
+     :clj  (java.util.Arrays/copyOf sf (- (alength sf) 1))))
 
 (deftype Deep [^objects pr m ^objects sf]
   IFingerTree
@@ -115,11 +115,11 @@
                (|> m (node (aget sf 0) (aget sf 1) (aget sf 2)))
                (digit (aget sf 3) x))))
 
-  (viewl [_]
-    [(first pr) (deepl (cut-first pr) m sf)])
+  (viewl [this]
+    [(peekl this) (deepl (cut-first pr) m sf)])
 
-  (viewr [_]
-    [(last sf) (deepr pr m (cut-last sf))])
+  (viewr [this]
+    [(peekr this) (deepr pr m (cut-last sf))])
 
   (peekl [_]
     (aget pr 0))

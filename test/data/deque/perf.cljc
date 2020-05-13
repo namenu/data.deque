@@ -34,7 +34,7 @@
     {}
     (dotimes [_ 3]
       (assert (= 386151 (p (str name ":small") (play (ctor 0) 459 71790)))))
-    (dotimes [_ 1]
+    (dotimes [_ 2]
       (assert (= 32700280 (p (str name ":medium") (play (ctor 0) 459 717900)))))
     (dotimes [_ 1]
       (assert (= 3211264152 (p (str name ":large") (play (ctor 0) 459 7179000)))))))

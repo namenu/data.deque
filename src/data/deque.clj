@@ -19,12 +19,12 @@
   (first [_]
     (peekl tree))
   (more [this]
-    (let [tree' (second (viewl tree))]
+    (let [[_ tree'] (viewl tree)]
       (if (identical? tree' empty-tree)
         (empty this)
         (PersistentDequeSeq. _meta tree'))))
   (next [_]
-    (let [tree' (second (viewl tree))]
+    (let [[_ tree'] (viewl tree)]
       (if-not (identical? tree' empty-tree)
         (PersistentDequeSeq. _meta tree'))))
   (cons [_ v]
@@ -58,8 +58,12 @@
   (peek-first [_] (peekl tree))
   (peek-last [_] (peekr tree))
 
-  (remove-first [_] (PersistentDeque. _meta (max (dec count) 0) (second (viewl tree))))
-  (remove-last [_] (PersistentDeque. _meta (max (dec count) 0) (second (viewr tree))))
+  (remove-first [_]
+    (let [[_ tree'] (viewl tree)]
+      (PersistentDeque. _meta (max (dec count) 0) tree')))
+  (remove-last [_]
+    (let [[_ tree'] (viewr tree)]
+      (PersistentDeque. _meta (max (dec count) 0) tree')))
 
   IObj
   (meta [_] _meta)

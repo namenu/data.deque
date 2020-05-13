@@ -1,8 +1,6 @@
 ;;; https://adventofcode.com/2018/day/9
 (ns data.deque.perf
-  (:require [data.deque :as dq]
-            [taoensso.tufte :as tufte :refer [defnp p profiled profile]])
-  #?(:clj (:import (data.deque PersistentDeque))))
+  (:require [taoensso.tufte :as tufte :refer [defnp p profiled profile]]))
 
 (defprotocol ICircle
   (ccw [_])
@@ -10,22 +8,6 @@
   (circle-push [_ v])
   (circle-pop [_])
   (circle-peek [_]))
-
-(extend-type #?(:cljs dq/PersistentDeque
-                :clj  PersistentDeque)
-  ICircle
-  (ccw [circle]
-    (let [v (peek circle)]
-      (-> circle (dq/remove-last) (dq/add-first v))))
-  (cw [circle]
-    (let [v (first circle)]
-      (-> circle (dq/remove-first) (dq/add-last v))))
-  (circle-push [circle v]
-    (dq/add-last circle v))
-  (circle-pop [circle]
-    (pop circle))
-  (circle-peek [circle]
-    (peek circle)))
 
 (defn place [circle next-num]
   (if (zero? (mod next-num 23))
@@ -45,14 +27,14 @@
         (recur circle (inc marble) (update score-map player (fnil + 0) score))))))
 
 
-(tufte/add-basic-println-handler! {})
+(defn benchmark [ctor name]
+  (tufte/add-basic-println-handler! {})
 
-(profile
-  {}
-  (dotimes [_ 5]
-    (p :small (play (dq/deque 0) 459 71790)))
-  (dotimes [_ 4]
-    (p :medium (play (dq/deque 0) 459 717900)))
-  (dotimes [_ 3]
-    (p :large (play (dq/deque 0) 459 7179000))))
-
+  (profile
+    {}
+    (dotimes [_ 3]
+      (assert (= 386151 (p (str name ":small") (play (ctor 0) 459 71790)))))
+    (dotimes [_ 1]
+      (assert (= 32700280 (p (str name ":medium") (play (ctor 0) 459 717900)))))
+    (dotimes [_ 1]
+      (assert (= 3211264152 (p (str name ":large") (play (ctor 0) 459 7179000)))))))

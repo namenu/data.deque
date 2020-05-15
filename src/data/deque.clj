@@ -3,6 +3,7 @@
   (:import (clojure.lang IPersistentStack IPersistentCollection Seqable ISeq Sequential Counted IObj IHashEq)))
 
 ;(set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
 
 (defprotocol IDeque
   (add-first [coll e])

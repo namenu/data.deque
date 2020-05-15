@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [Single ->Single Empty ->Empty]))
 
 ;(set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
 
 ;; finger-tree
 ;;
@@ -19,7 +20,7 @@
      ([a b c d] (array a b c d)))
 
    :clj
-   (defn ^:static digit [& args]
+   (defn digit [& args]
      (object-array args)))
 
 #?(:cljs
@@ -28,7 +29,7 @@
      ([a b c] (array a b c)))
 
    :clj
-   (defn ^:static node [& args]
+   (defn node [& args]
      (object-array args)))
 
 (defprotocol IFingerTree
@@ -93,7 +94,7 @@
 
 (defn cut-last [^objects sf]
   #?(:cljs (.slice sf 0 -1)
-     :clj  (java.util.Arrays/copyOf sf (- (alength sf) 1))))
+     :clj  (java.util.Arrays/copyOf sf (dec (alength sf)))))
 
 (deftype Deep [^objects pr m ^objects sf]
   IFingerTree
@@ -125,7 +126,7 @@
     (aget pr 0))
 
   (peekr [_]
-    (aget sf (- (alength sf) 1))))
+    (aget sf (dec (alength sf)))))
 
 
 #?(:cljs

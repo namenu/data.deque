@@ -1,8 +1,9 @@
 (ns data.finger-tree
   (:refer-clojure :exclude [Single ->Single Empty ->Empty]))
 
-;(set! *warn-on-reflection* true)
-(set! *unchecked-math* true)
+#_(set! *warn-on-reflection* true)
+#?(:clj
+   (set! *unchecked-math* true))
 
 ;; finger-tree
 ;;

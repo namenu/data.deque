@@ -1,37 +1,59 @@
-## Persistent Deque (Double Ended Queue)
+## Persistent Deque
 
-ClojureScript에서 사용 가능한 finger-tree 기반의 persistent deque를 구현
-삽입 삭제 연산: O(1) (amortized)
-조회 : O(1)
+Deque(double-ended queue) is an abstract data type that generalizes a queue,
+for which elements can be added to or removed from either the front or back.
 
-왜 finger-tree인가?
- - Catenable deque (Kaplan & Tarjan, 1995; Okasaki, 1997)는 효과적인 삽입, 삭제를 보장하지 않는다.
- - Banker's deque는 stack은 빠른 반면 queue는 느린 성능을 보인다.  
+`data.deque` is a persistent implementation of deque for Clojure(Script)
+which is based on slightly modified version of [finger tree](https://en.wikipedia.org/wiki/Finger_tree).
+`data.deque` gives O(1) access to both ends and amortized O(1) for immutable insertion/deletion.   
 
-core.data.finger-tree와 다른 점?
- - 20%+ faster than finger-tree/double-list
- - ClojureScript 지원
-   - 뿐만 아니라 js용으로 만들어진 persistent deque 자료구조도 없음.
- - measure 관련 기능 제거
-   - finger-tree를 deque 이외에 다른 용도로 활용하기 위한 자료구조를 제거
- - concatatenation/split 지원하지 않음
-   - deque에는 불필요한 인터페이스
 
-성능 개선 방안:
- - Digit, Node에 JS array 사용
- - peek 하는 경우 tree rotation이 일어나지 않도록 (peekl/peekr)
- - ICounted
- - supply [collection hashes](https://clojure.org/reference/data_structures#_clojure_collection_hashes) 
+#### Why Finger Tree?
 
-기타:
- - conform basic collection protocols (like PersistentVector/PersistentQueue)
-   - ICloneable, IEquiv, ICounted, IIterable, IMeta 
- 
-기타 TODO:
- - transient
- - banker's deque와 성능 비교 
- - :bundle 타겟으로 빌드
+Bankers Deque is also a purely functional data structure that guarantee amortized constant time but performs worse due to reverse operation. 
+Real-Time Deque eliminates amortization by "Lazy Rebuilding" technique, but it also has some overhead due to its laziness.
+Finger Tree provides a balanced framework for building deque in terms of both time and space complexity.
 
-Reference
+
+#### Differences from [core.data.finger-tree](https://github.com/clojure/data.finger-tree) ? 
+ - ClojureScript support
+ - Better performance
+ - No unnecessary features for deque
+   - Trees are not concatable / splittable
+   - Measurements only being used for counting
+
+
+#### Example
+
+```clj
+(require '[data.deque :refer [deque]])
+
+(def dl (deque 5 4 3 2 1))
+
+(peek-first dl)
+=> 1
+
+(peek-last dl)
+=> 5
+
+(-> dl (add-first 0) (add-last 6) seq)
+=> (0 1 2 3 4 5 6)
+
+(-> dl (remove-first) (remove-last) seq)
+=> (1 2 3)
+```
+
+
+### Benchmark:
+
+|                             | small    | medium   | large  | rate  |
+| --------------------------- | -------- | -------- | ------ | ----- |
+| java.util.ArrayDeque (base) | 37.94ms  | 271.44ms | 3.47s  | x1    |
+| clojure.data.finger-tree    | 196.50ms | 1.23s    | 12.88s | x3.86 |
+| data.deque (JVM)            | 158.50ms | 595.49ms | 6.13s  | x1.89 |
+| data.deque (Browser)        | 152ms    | 807ms    | 7.47s  | x2.31 |
+
+
+### Reference
  - [Finger trees: a simple general-purpose data structure](http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf)
  - [Purely Functional, Real-Time Deques with Catenation](http://www.math.tau.ac.il/~haimk/adv-ds-2000/jacm-final.pdf)

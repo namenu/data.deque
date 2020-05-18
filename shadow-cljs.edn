@@ -6,11 +6,11 @@
         :modules  {:main {:entries [data.deque]}}
         :devtools {:http-root "public"
                    :http-port 6500}}
-  :npm {:target     :npm-module
-        :entries    [data.deque]
-        :output-dir "out"
-        :devtools   {:http-root "public"
-                     :http-port 6500}}}
+  :lib {:target     :node-library
+        :output-to  "out/deque.js"
+        :exports-fn data.deque/deque
+        ;:compiler-options {:optimizations :advanced}
+        }}
 
  :nrepl
  {:port 9000}}

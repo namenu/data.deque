@@ -97,5 +97,7 @@
 
 (def EMPTY (PersistentDeque. nil 0 empty-tree))
 
-(defn deque [& coll]
+(defn deque
+  "Creates a new deque containing the args."
+  [& coll]
   (into EMPTY coll))

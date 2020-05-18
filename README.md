@@ -20,7 +20,7 @@ Finger Tree provides a balanced framework for building deque in terms of both ti
    - Measurements only being used for counting
 
 
-### Example
+## Example
 
 ```clj
 (require '[data.deque :refer [deque]])
@@ -48,7 +48,7 @@ Finger Tree provides a balanced framework for building deque in terms of both ti
 ```
 
 
-### Benchmark
+## Benchmark
 
 | implementation              |    small |   medium |  large |  rate |
 | --------------------------- | -------: | -------: | -----: | ----: |
@@ -58,6 +58,6 @@ Finger Tree provides a balanced framework for building deque in terms of both ti
 | data.deque (Browser)        | 152ms    | 807ms    | 7.47s  | x2.31 |
 
 
-### Reference
+## Reference
  - [Finger trees: a simple general-purpose data structure](http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf)
  - [Purely Functional, Real-Time Deques with Catenation](http://www.math.tau.ac.il/~haimk/adv-ds-2000/jacm-final.pdf)

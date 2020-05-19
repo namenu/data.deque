@@ -5,8 +5,8 @@
 `data.deque` is a persistent deque for Clojure(Script).
 Deque(double-ended queue) is an abstract data type that generalizes a queue, for which elements can be added to or removed from either the front or back.
 
-The implementation is based on a slightly modified version of Finger tree[^1].
-`data.deque` gives O(1) access to both ends and amortized O(1) for immutable insertion/deletion.
+The implementation of `data.deque` is based on a slightly modified version of [Finger tree](http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf).
+It gives O(1) access to both ends and amortized O(1) for immutable insertion/deletion.
 
 
 ## Example
@@ -18,22 +18,22 @@ The implementation is based on a slightly modified version of Finger tree[^1].
 (def dl (deque 5 4 3 2 1))
 
 (peek-first dl)
-=> 1
+;=> 1
 
 (peek-last dl)
-=> 5
+;=> 5
 
 (-> dl
     (add-first 0)
     (add-last 6)
     seq)
-=> (0 1 2 3 4 5 6)
+;=> (0 1 2 3 4 5 6)
 
 (-> dl
     (remove-first)
     (remove-last)
     seq)
-=> (1 2 3)
+;=> (1 2 3)
 ```
 
 
@@ -45,7 +45,7 @@ The implementation is based on a slightly modified version of Finger tree[^1].
    - No measuring interfaces
    
 
-### Benchmark
+## Benchmark
 
 | implementation              |    small |   medium |  large |  rate |
 | --------------------------- | -------: | -------: | -----: | ----: |
@@ -57,12 +57,12 @@ The implementation is based on a slightly modified version of Finger tree[^1].
 
 ## Why Finger Tree?
 
-Bankers Deque[^2] is also a purely functional data structure that guarantee amortized constant time but performs worse due to reverse operation. 
-Real-Time Deque[^3] eliminates amortization by "Lazy Rebuilding" technique, but it also has some overhead due to its laziness.
+[Banker's Deque](https://www.cs.cmu.edu/~rwh/theses/okasaki.pdf) is also a purely functional data structure that guarantee amortized constant time but performs worse due to reverse operation. 
+[Real-Time Deque](http://www.math.tau.ac.il/~haimk/adv-ds-2000/jacm-final.pdf) eliminates amortization by "Lazy Rebuilding" technique, but it also has some overhead due to its laziness.
 Finger Tree provides a balanced framework for building deque in terms of both time and space complexity.
 
 
 ## Reference
- - [^1]: [Finger trees: a simple general-purpose data structure](http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf)
- - [^2]: [Chris Okasaki. Purely Functional Data Structures](https://www.cs.cmu.edu/~rwh/theses/okasaki.pdf)
- - [^3]: [Purely Functional, Real-Time Deques with Catenation](http://www.math.tau.ac.il/~haimk/adv-ds-2000/jacm-final.pdf)
+ - [Ralf Hinze and Ross Paterson. Finger trees: a simple general-purpose data structure](http://www.soi.city.ac.uk/~ross/papers/FingerTree.pdf)
+ - [Chris Okasaki. Purely Functional Data Structures](https://www.cs.cmu.edu/~rwh/theses/okasaki.pdf)
+ - [Haim Kaplan and Robert E. Tarjan. Purely Functional, Real-Time Deques with Catenation](http://www.math.tau.ac.il/~haimk/adv-ds-2000/jacm-final.pdf)

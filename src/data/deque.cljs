@@ -134,4 +134,4 @@
 (defn deque
   "Creates a new deque containing the args."
   [& coll]
-  (into (.-EMPTY PersistentDeque) coll))
+  (into (.-EMPTY PersistentDeque) (reverse coll)))

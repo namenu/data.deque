@@ -2,7 +2,7 @@
  ["src" "test"]
 
  :deps
- {org.clojure/clojurescript {:mvn/version "1.10.758"}}
+ {org.clojure/clojurescript {:mvn/version "1.10.764"}}
 
  :aliases
  {:test {:extra-deps {com.taoensso/tufte {:mvn/version "2.1.0"}

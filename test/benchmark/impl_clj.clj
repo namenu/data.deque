@@ -1,5 +1,5 @@
-(ns data.deque.impl-clj
-  (:require [data.deque.perf :refer [ICircle benchmark]]
+(ns benchmark.impl-clj
+  (:require [benchmark.core :refer [ICircle benchmark]]
             [data.deque :as dq]
             [clojure.data.finger-tree :refer [double-list conjl]])
   (:import (data.deque PersistentDeque)
@@ -51,6 +51,6 @@
   (circle-peek [circle]
     (peek circle)))
 
-(benchmark #(dq/deque %1) "data.deque")
-(benchmark #(ArrayDeque. [%1]) "java.util.ArrayDeque")
-(benchmark #(double-list %1) "clojure.data.finger-tree")
+(core #(dq/deque %1) "data.deque")
+(core #(ArrayDeque. [%1]) "java.util.ArrayDeque")
+(core #(double-list %1) "clojure.data.finger-tree")

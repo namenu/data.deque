@@ -1,6 +1,6 @@
-(ns data.deque.impl-cljs
+(ns benchmark.impl-cljs
   (:require [data.deque :as dq]
-            [data.deque.perf :refer [ICircle benchmark]]))
+            [benchmark.core :refer [ICircle benchmark]]))
 
 (extend-type dq/PersistentDeque
   ICircle

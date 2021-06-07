@@ -1,5 +1,5 @@
 ;;; https://adventofcode.com/2018/day/9
-(ns data.deque.perf
+(ns benchmark.core
   (:require [taoensso.tufte :as tufte :refer [defnp p profiled profile]]))
 
 (defprotocol ICircle

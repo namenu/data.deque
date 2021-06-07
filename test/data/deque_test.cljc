@@ -1,8 +1,7 @@
-(ns data.deque.tests
+(ns data.deque-test
   (:require #?(:cljs [cljs.test :refer-macros [deftest is testing run-tests]]
                :clj  [clojure.test :refer [deftest is testing run-tests]])
-            [data.deque :refer [deque add-first add-last remove-first remove-last peek-first peek-last]]
-            [data.finger-tree :as ft]))
+            [data.deque :refer [deque add-first add-last remove-first remove-last peek-first peek-last]]))
 
 (def empty-deque
   #?(:cljs (.-EMPTY data.deque.PersistentDeque)
@@ -40,4 +39,29 @@
              (meta (remove-last d1))
              (meta (empty d1)))))))
 
-(run-tests)
+
+(deftest comparable-test
+  (is (neg? (compare (deque 1 2) (deque 2 3))))
+  (is (neg? (compare (deque 1) (deque 2 3))))
+  (is (neg? (compare (deque) (deque 1))))
+
+  (is (pos? (compare (deque 2 3) (deque 1 2))))
+  (is (pos? (compare (deque 2 3) (deque 1))))
+  (is (pos? (compare (deque 1) (deque))))
+
+  (is (zero? (compare (deque) (deque))))
+  (is (zero? (compare (deque 1) (deque 1)))))
+
+(deftest conj-test
+  (let []
+    (is (= (conj #{} (deque 1)) #{(deque 1)}))
+    (is (= (conj #{} (deque 1) (deque 1)) #{(deque 1)}))
+    (is (= (conj #{} (deque 1) (deque 2)) #{(deque 1) (deque 2)})))
+
+  (let [ss (conj (sorted-set) (deque 1))]
+    (is (= (count ss) 1))
+    (is (= (deque 1) (first ss))))
+
+  (let [dqs (->> (map deque (shuffle (range 10)))
+                 (into (sorted-set)))]
+    (is (= (map deque (range 10)) (seq dqs)))))

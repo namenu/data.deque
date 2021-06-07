@@ -153,11 +153,12 @@
 
 
 (comment
-  (let [layer3 (ft/->Empty)
-        layer2 (ft/->Deep (ft/digit (ft/node \i \s) (ft/node \i \s))
-                          layer3
-                          (ft/digit (ft/node \n \o \t) (ft/node \a \t)))
-        layer1 (ft/->Deep (ft/digit \t \h)
-                          layer2
-                          (ft/digit \r \e \e))]
+  (let [layer3 Empty
+        layer2 (->Deep (digit (node \i \s) (node \i \s))
+                       layer3
+                       (digit (node \n \o \t) (node \a \t)))
+        layer1 (->Deep (digit \t \h)
+                       layer2
+                       (digit \r \e \e))]
+
     ))

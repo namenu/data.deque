@@ -54,6 +54,8 @@ It gives O(1) access to both ends and amortized O(1) for immutable insertion/del
 | data.deque (JVM)            | 158.50ms | 595.49ms | 6.13s  | x1.89 |
 | data.deque (Browser)        | 152ms    | 807ms    | 7.47s  | x2.31 |
 
+* Tested on 2.8 GHz Quad-Core Intel Core i7
+
 
 ## Why Finger Tree?
 

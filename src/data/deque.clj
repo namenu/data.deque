@@ -1,6 +1,6 @@
 (ns data.deque
   (:require [data.finger-tree :refer [<| |> viewl viewr peekl peekr empty-tree]])
-  (:import (clojure.lang IPersistentStack IPersistentCollection Seqable ISeq Sequential Counted IObj IHashEq)))
+  (:import (clojure.lang IPersistentStack IPersistentCollection Seqable ISeq Sequential Counted IObj IHashEq PersistentList)))
 
 ;(set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
@@ -34,7 +34,7 @@
   Sequential
   IPersistentCollection
   (empty [_]
-    (with-meta clojure.lang.PersistentList/EMPTY _meta))
+    (with-meta PersistentList/EMPTY _meta))
   (equiv [this other]
     ;; copied from cljs.core
     (boolean
@@ -49,32 +49,57 @@
   (seq [this] this)
 
   IHashEq
-  (hasheq [this] (hash-ordered-coll this)))
+  (hasheq [this]
+    (reduce (fn [acc e] (unchecked-add-int
+                          (unchecked-multiply-int 31 acc)
+                          (hash e)))
+            1
+            this))
 
-(deftype PersistentDeque [_meta count tree]
+  Comparable
+  (compareTo [this that]
+    (loop [xs this ys (seq that)]
+      (cond (nil? xs) (if (nil? ys) 0 -1)
+            (nil? ys) 1
+            :else (let [cmp (compare (first xs) (first ys))]
+                    (if (zero? cmp)
+                      (recur (next xs) (next ys))
+                      cmp))))))
+
+(deftype PersistentDeque [_meta cnt tree]
   IDeque
-  (add-first [_ v] (PersistentDeque. _meta (inc count) (<| tree v)))
-  (add-last [_ v] (PersistentDeque. _meta (inc count) (|> tree v)))
+  (add-first [_ v] (PersistentDeque. _meta (inc cnt) (<| tree v)))
+  (add-last [_ v] (PersistentDeque. _meta (inc cnt) (|> tree v)))
 
   (peek-first [_] (peekl tree))
   (peek-last [_] (peekr tree))
 
   (remove-first [_]
     (let [[_ tree'] (viewl tree)]
-      (PersistentDeque. _meta (max (dec count) 0) tree')))
+      (PersistentDeque. _meta (max (dec cnt) 0) tree')))
   (remove-last [_]
     (let [[_ tree'] (viewr tree)]
-      (PersistentDeque. _meta (max (dec count) 0) tree')))
+      (PersistentDeque. _meta (max (dec cnt) 0) tree')))
 
   IObj
   (meta [_] _meta)
   (withMeta [coll new-meta]
     (if (identical? new-meta _meta)
       coll
-      (PersistentDeque. new-meta count tree)))
+      (PersistentDeque. new-meta cnt tree)))
 
   IHashEq
-  (hasheq [this] (hash-ordered-coll this))
+  (hasheq [this]
+    (-> (hash (seq this))
+        (mix-collection-hash cnt)))
+
+  Comparable
+  (compareTo [this that]
+    (cond
+      (< cnt (count that)) -1
+      (> cnt (count that)) 1
+      (== cnt 0) 0
+      :else (compare (seq this) (seq that))))
 
   IPersistentStack
   (peek [this] (peek-last this))
@@ -93,7 +118,7 @@
   (cons [coll v] (add-first coll v))
 
   Counted
-  (count [_] count))
+  (count [_] cnt))
 
 (def EMPTY (PersistentDeque. nil 0 empty-tree))
 
